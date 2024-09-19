@@ -9,17 +9,25 @@ const Statistics = (props) => {
   if ((good + neutral + bad) != 0) {
     average = (good - bad) / (good + neutral + bad)
     percent = (good / (good + neutral + bad)) * 100
+    return(
+      <>
+        <h1>statistics</h1>
+        <div>good {good}</div>
+        <div>neutral {neutral}</div>
+        <div>bad {bad}</div>
+        <div>average {average}</div>
+        <div>positive {percent}</div>
+      </>
+    )
   }
-  return(
-    <>
+  else{
+    return(
+      <>
       <h1>statistics</h1>
-      <div>good {good}</div>
-      <div>neutral {neutral}</div>
-      <div>bad {bad}</div>
-      <div>average {average}</div>
-      <div>positive {percent}</div>
-    </>
-  )
+      <div>No feedback given</div>
+      </>
+    )
+  }
 }
 
 const App = () => {
