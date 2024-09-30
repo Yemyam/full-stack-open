@@ -1,5 +1,37 @@
 import { useState } from 'react'
 
+const Filter = ({onChange}) => {
+  return(
+    <div>
+      filter shown with <input onChange={onChange}></input>
+    </div>
+  )
+}
+
+const PersonForm = ({onSubmit, nameChange, numberChange}) => {
+  return(
+    <form onSubmit={onSubmit}>
+      <div>
+        name: <input onChange={nameChange}/>
+      </div>
+      <div>
+        number: <input onChange={numberChange}/></div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+
+const Persons = ({people}) => {
+  return(
+    <div>
+      {people.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
+    </div>
+  )
+}
+  
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -30,7 +62,7 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = {
-      name: newName, number: newNumber
+      name: newName, number: newNumber, id: persons.length + 1
     }
     if (persons.some(person => person.name == newPerson.name)){
       alert(`${newName} is already added to phonebook`)
@@ -42,27 +74,15 @@ const App = () => {
 
   const peopleToShow = persons.filter(person => person.name.toLowerCase().match(searchInput.toLowerCase()))
 
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input onChange={handleSearchChange}></input>
-      </div>
-      <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input onChange={handleNumberChange}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <div>
-        {peopleToShow.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
-      </div>
+      <Filter onChange={handleSearchChange}></Filter>
+      <h3>add a new</h3>
+      <PersonForm onSubmit={addPerson} nameChange={handleNameChange} numberChange={handleNumberChange}></PersonForm>
+      <h3>Numbers</h3>
+      <Persons people={peopleToShow}></Persons>
     </div>
   )
 }
