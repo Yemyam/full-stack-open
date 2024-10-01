@@ -25,10 +25,11 @@ const PersonForm = ({onSubmit, nameChange, numberChange}) => {
   )
 }
 
-const Persons = ({people}) => {
+const Persons = ({people,removePerson}) => {
   return(
     <div>
-      {people.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
+      {people.map(person => 
+          <div key={person.id}>{person.name} {person.number} <button key={person.id} onClick={() => removePerson(person.id)}>delete</button></div>)}
     </div>
   )
 }
@@ -63,10 +64,20 @@ const App = () => {
     setSearchInput(event.target.value)
   }
 
+  const removePerson = (id) => {
+    personService
+    .remove(id)
+    .then(response => {
+      setPersons(persons.filter(person => person.id !== id))
+    })
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = {
-      name: newName, number: newNumber, id: persons.length + 1
+      name: newName, 
+      number: newNumber, 
+      id: (persons.length + 1).toString()
     }
     if (persons.some(person => person.name == newPerson.name)){
       alert(`${newName} is already added to phonebook`)
@@ -90,7 +101,7 @@ const App = () => {
       <h3>add a new</h3>
       <PersonForm onSubmit={addPerson} nameChange={handleNameChange} numberChange={handleNumberChange}></PersonForm>
       <h3>Numbers</h3>
-      <Persons people={peopleToShow}></Persons>
+      <Persons people={peopleToShow} removePerson={removePerson}></Persons>
     </div>
   )
 }
