@@ -50,12 +50,10 @@ const App = () => {
   }, [])
 
   const handleNameChange = (event) => {
-    console.log(event.target.value);
     setNewName(event.target.value)
   }
 
   const handleNumberChange = (event) => {
-    console.log(event.target.value)
     setNewNumber(event.target.value)
   }
 
@@ -65,11 +63,14 @@ const App = () => {
   }
 
   const removePerson = (id) => {
-    personService
-    .remove(id)
-    .then(response => {
-      setPersons(persons.filter(person => person.id !== id))
-    })
+    const name = persons.find(name => name.id === id).name
+    if(window.confirm(`Delete ${name}?`)){
+      personService
+      .remove(id)
+      .then(response => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+    }
   }
 
   const addPerson = (event) => {
@@ -80,7 +81,13 @@ const App = () => {
       id: (persons.length + 1).toString()
     }
     if (persons.some(person => person.name == newPerson.name)){
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        personService
+        .update(newPerson.id -1, newPerson)
+        .then(response => {
+          setPersons(persons.map(person => person.name !== newName ? person : response.data))
+        })
+      }
     }
     else {
       personService
