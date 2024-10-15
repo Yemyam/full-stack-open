@@ -1,24 +1,9 @@
 {
   "persons": [
     {
-      "id": "1097",
-      "name": "bukky",
-      "number": "324"
-    },
-    {
-      "id": "e8f8",
-      "name": "jimmy",
-      "number": "432"
-    },
-    {
-      "id": "5700",
-      "name": "billy",
-      "number": "13123"
-    },
-    {
+      "id": "dd35",
       "name": "ethan",
-      "number": "403",
-      "id": "3e82"
+      "number": "123"
     }
   ]
 }

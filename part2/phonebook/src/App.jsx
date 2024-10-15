@@ -61,13 +61,22 @@ const App = () => {
         .update(oldPerson.id, newPerson)
         .then(response => {
           setPersons(persons.map(person => person.name !== newPerson.name ? person : response.data))
+          setMessage(
+            `Updated ${newPerson.name}'s number`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
-        setMessage(
-          `Updated ${newPerson.name}'s number`
-        )
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
+        .catch(error => {
+          setPersons(persons.filter(person => person.id !== oldPerson.id))
+          setMessage(
+            `Information of ${newPerson.name} has already been removed from the server`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
       }
     }
     else {
