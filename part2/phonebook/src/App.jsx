@@ -1,45 +1,17 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
+import Filter from './components/Filter.jsx'
+import Persons from './components/Persons.jsx'
+import PersonForm from './components/PersonForm.jsx'
+import Notification from './components/Notification.jsx'
 
-const Filter = ({onChange}) => {
-  return(
-    <div>
-      filter shown with <input onChange={onChange}></input>
-    </div>
-  )
-}
-
-const PersonForm = ({onSubmit, nameChange, numberChange}) => {
-  return(
-    <form onSubmit={onSubmit}>
-      <div>
-        name: <input onChange={nameChange}/>
-      </div>
-      <div>
-        number: <input onChange={numberChange}/></div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
-}
-
-const Persons = ({people,removePerson}) => {
-  return(
-    <div>
-      {people.map(person => 
-          <div key={person.id}>{person.name} {person.number} <button key={person.id} onClick={() => removePerson(person.id)}>delete</button></div>)}
-    </div>
-  )
-}
 
 const App = () => {
   const [persons, setPersons] = useState([])
-
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -78,23 +50,38 @@ const App = () => {
     const newPerson = {
       name: newName, 
       number: newNumber, 
-      id: (persons.length + 1).toString()
     }
-    if (persons.some(person => person.name == newPerson.name)){
+    if (persons.some(person => (person.name == newPerson.name & person.number == newPerson.number))) {
+      window.alert(`${newName} is already added to the phonebook`)
+    }
+    else if (persons.some(person => person.name == newPerson.name)){
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        const oldPerson = persons.find(person => person.name == newPerson.name)
         personService
-        .update(newPerson.id -1, newPerson)
+        .update(oldPerson.id, newPerson)
         .then(response => {
-          setPersons(persons.map(person => person.name !== newName ? person : response.data))
+          setPersons(persons.map(person => person.name !== newPerson.name ? person : response.data))
         })
+        setMessage(
+          `Updated ${newPerson.name}'s number`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       }
     }
     else {
       personService
       .create(newPerson)
       .then(response => {
-        setPersons(persons.concat(newPerson))
+        setPersons(persons.concat(response.data))
       })
+      setMessage(
+        `Added ${newPerson.name}`
+      )
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 
@@ -104,6 +91,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}></Notification>
       <Filter onChange={handleSearchChange}></Filter>
       <h3>add a new</h3>
       <PersonForm onSubmit={addPerson} nameChange={handleNameChange} numberChange={handleNumberChange}></PersonForm>
