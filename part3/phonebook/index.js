@@ -24,14 +24,18 @@ app.get('/api/persons', (request, response, next) => {
     .catch(error => next(error))
   })
 
-app.get("/info", (request, response) => {
+app.get("/info", (request, response, next) => {
     const date = new Date()
-    response.send(
+
+    Person.countDocuments({}).then(count => {
+      response.send(
         `
-        <div>Phonebook has info for ${persons.length} people</div>
+        <div>Phonebook has info for ${count} people</div>
         <div>${date}</div>
         `
     )
+    })
+      .catch(error => next(error))
 })
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -99,9 +103,6 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  }
-  if (error.name === 'TypeError') {
-    return response.status(400).send({ error: 'name or number is missing' })
   }
 
   next(error)
