@@ -49,6 +49,24 @@ app.delete("/api/persons/:id", (request, response, next) => {
       .catch(error => next(error))
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
+
+  Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(400).end()
+      }
+
+      person.name = name
+      person.number = number
+
+      return person.save().then((updatedPerson) => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error => next(error))
+})
 
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
@@ -81,6 +99,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }
+  if (error.name === 'TypeError') {
+    return response.status(400).send({ error: 'name or number is missing' })
   }
 
   next(error)
