@@ -22,7 +22,7 @@ const Notification = ({message}) => {
     if(message === null){
       return null
     }
-    if(message.includes('removed')){
+    if(message.includes('removed') || message.includes('failed')){
         return(
           <div style={errorStyle}>
             {message}
