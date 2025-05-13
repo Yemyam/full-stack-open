@@ -69,13 +69,20 @@ const App = () => {
           }, 5000)
         })
         .catch(error => {
-          setPersons(persons.filter(person => person.id !== oldPerson.id))
-          setMessage(
-            `Information of ${newPerson.name} has already been removed from the server`
-          )
-          setTimeout(() => {
-            setMessage(null)
-          }, 5000)
+          if (error.name === 'AxiosError') {
+            setMessage(`${newPerson.number} is invalid`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          } else{
+            setPersons(persons.filter(person => person.id !== oldPerson.id))
+            setMessage(
+              `Information of ${newPerson.name} has already been removed from the server`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          }
         })
       }
     }
