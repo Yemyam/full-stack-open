@@ -44,6 +44,34 @@ test('blog posts have unique identifier named id', async () => {
     assert.ok(blogs[0].id)
 })
 
+test('blog post can be added', async () => {
+    const newBlog = {
+        title: 'testing3',
+        author: 'tester3',
+        url: 'testing3url.com',
+        likes: 4
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    const titles = response.body.map(blog => blog.title)
+    const authors = response.body.map(blog => blog.author)
+    const urls = response.body.map(blog => blog.url)
+    const likes = response.body.map(blog => blog.likes)
+
+    assert.strictEqual(response.body.length, initialBlogs.length + 1)
+    assert(titles.includes('testing3'))
+    assert(authors.includes('tester3'))
+    assert(urls.includes('testing3url.com'))
+    assert(likes.includes(4))
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
