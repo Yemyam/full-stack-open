@@ -90,6 +90,29 @@ test('defaults to zero likes if likes are missing', async () => {
     assert.strictEqual(likes[2], 0)
 })
 
+test('bad request if title or url are missing', async () => {
+    const missingUrl = {
+        title: 'testing3',
+        author: 'tester3',
+        likes: 4
+    }
+
+    const missingTitle = {
+        author: 'tester3',
+        url: 'testing3url.com',
+        likes: 6
+    }
+    await api
+        .post('/api/blogs')
+        .send(missingUrl)
+        .expect(400)
+
+    await api
+        .post('/api/blogs')
+        .send(missingTitle)
+        .expect(400)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
