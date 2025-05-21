@@ -72,6 +72,24 @@ test('blog post can be added', async () => {
     assert(likes.includes(4))
 })
 
+test('defaults to zero likes if likes are missing', async () => {
+    const newBlog = {
+        title: 'testing3',
+        author: 'tester3',
+        url: 'testing3url.com',
+    }
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    const likes = response.body.map(blog => blog.likes)
+    assert.strictEqual(likes[2], 0)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
