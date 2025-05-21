@@ -37,7 +37,12 @@ test('all notes are returned', async () => {
         .expect('Content-Type', /application\/json/)
   
     assert.strictEqual(response.body.length, initialBlogs.length)
-  })
+})
+
+test('blog posts have unique identifier named id', async () => {
+    const blogs = await Blog.find({})
+    assert.ok(blogs[0].id)
+})
 
 after(async () => {
   await mongoose.connection.close()
