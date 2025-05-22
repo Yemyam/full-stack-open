@@ -1,5 +1,5 @@
 const assert = require('node:assert')
-const { test, after, beforeEach, before } = require('node:test')
+const { test, after, beforeEach, before, describe } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -111,6 +111,23 @@ test('bad request if title or url are missing', async () => {
         .post('/api/blogs')
         .send(missingTitle)
         .expect(400)
+})
+
+describe('Deleting blogs', async () => {
+    test('Deleting a blog that exists', async () => {
+        const response = await api.get('/api/blogs')
+        await api.delete(`/api/blogs/${response.body[0].id}`)
+        const response2 = await api.get('/api/blogs')
+        assert.strictEqual(response2.body.length, 1)
+        assert.notEqual(response2.body[0].id, response.body[0].id)
+    })
+
+    test('Deleting a blog that does not exist', async () => {
+        const fakeId = '123456abcdefg'
+        await api
+            .delete(`/api/blogs/${fakeId}`)
+            .expect(400)
+    })
 })
 
 after(async () => {
