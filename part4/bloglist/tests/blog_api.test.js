@@ -130,6 +130,33 @@ describe('Deleting blogs', async () => {
     })
 })
 
+describe('Updating blog posts', async () => {
+    test('Updating a blog post that exists', async () => {
+        const updatedLikes = {
+            likes: 12
+        }
+        const response = await api.get('/api/blogs')
+        await api
+            .put(`/api/blogs/${response.body[0].id}`)
+            .send(updatedLikes)
+            .expect(201)
+        const response2 = await api.get('/api/blogs')
+        assert.strictEqual(response.body[0].likes , 1)
+        assert.strictEqual(response2.body[0].likes , 12)
+    })
+
+    test('Updating blog post that does not exist', async () => {
+        const fakeId = '123456abcdefg'
+        const updatedLikes = {
+            likes: 12
+        }
+        await api
+            .put(`/api/blogs/${fakeId}`)
+            .send(updatedLikes)
+            .expect(400)
+    })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
