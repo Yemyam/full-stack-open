@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -19,6 +20,19 @@ const initialBlogs = [
         author: 'tester2',
         url: 'testin2gurl.com',
         likes: 5
+    }
+]
+
+const initialUsers = [
+    {
+        username: "Yamyam",
+        name: "Ethan Braum",
+        password: "123456",
+    },
+    {
+        username: "ethan403",
+        name: "Bobby",
+        password: "abcdef"
     }
 ]
 
@@ -154,6 +168,53 @@ describe('Updating blog posts', async () => {
             .put(`/api/blogs/${fakeId}`)
             .send(updatedLikes)
             .expect(400)
+    })
+})
+
+describe('Adding an invalid user', async () => {
+    beforeEach( async () => {
+        await User.deleteMany({})
+        await api.post('/api/users').send(initialUsers[0])
+        await api.post('/api/users').send(initialUsers[1])
+    })
+    test('Adding a user with a duplicate username', async () => {
+        const duplicateUser = {
+            username: "Yamyam",
+            name: "Joey",
+            password: "123"
+        }
+        const response = await api
+            .post('/api/users')
+            .send(duplicateUser)
+            .expect(400)
+
+        assert.strictEqual(response.body.error, 'expected `username` to be unique')
+    })
+    test('Username is too short', async () => {
+        const usernameTooShort = {
+            username: "Bo",
+            name: "Bobby",
+            password: "12345",
+        }
+        response = await api
+            .post('/api/users')
+            .send(usernameTooShort)
+            .expect(400)
+
+        assert.ok(response.body.error.includes("User validation failed"))
+    })
+    test('Password is too short', async () => {
+        const passwordTooShort = {
+            username: "Boo",
+            name: "Bobby",
+            password: "12",
+        }
+        response = await api
+            .post('/api/users')
+            .send(passwordTooShort)
+            .expect(403)
+
+        assert.strictEqual(response.body.error , "password must be at least 3 characters long.")
     })
 })
 
