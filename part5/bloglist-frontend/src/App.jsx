@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [title, setTitle] = useState('')
@@ -28,11 +28,15 @@ const App = () => {
       setUsername('')
       setPassword('')
       blogService.setToken(user.token)
+      setMessage('successful login!')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
 
     } catch (exception) {
-      setErrorMessage('Wrong Credentials')
+      setMessage('wrong username or password')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 5000)
     }
   }
@@ -42,6 +46,10 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
+    setMessage('successfully logged out!')
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   const addBlog = async (event) => {
@@ -52,8 +60,16 @@ const App = () => {
         title, author, url
       })
       setBlogs(blogs.concat(blog))
+      setMessage(`a new blog ${title} by ${author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     } catch(exception){
       console.log(exception)
+      setMessage(`Bad Request: title, author and url need to be filled out`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 
@@ -149,9 +165,10 @@ const App = () => {
     </div>
   )
 
+
   return (
     <div>
-      <div>{errorMessage}</div>
+      <Notification message={message}></Notification>
       {user === null 
       ? loginForm() 
       : blogInfo()}
