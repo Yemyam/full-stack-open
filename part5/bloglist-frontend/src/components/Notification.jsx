@@ -24,7 +24,7 @@ const Notification = ({message}) => {
     if(message === null){
         return null
     }
-    if(message.includes('Wrong') || message.includes('Bad')){
+    if(message.includes('wrong') || message.includes('bad')){
         return (
             <div style={errorStyle}>{message}</div>
           )
