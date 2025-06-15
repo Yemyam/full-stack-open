@@ -55,7 +55,7 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       const blog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(blog))
+      setBlogs(blogs.concat(blog).sort((a, b) => b.likes - a.likes))
       blogFormRef.current.toggleVisible()
       setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
       setTimeout(() => {
@@ -78,7 +78,7 @@ const App = () => {
       blogService.setToken(user.token)
     }
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     )  
   }, [])
 
